@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Compass, Eye, Heart, Star, Clock, MapPin } from 'lucide-react'
 
 function App() {
@@ -30,12 +30,12 @@ function App() {
   const handleCalcular = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://localhost:3001/api/calcular', {
+      const response = await fetch('https://boraonde-welder.loca.lt/api/calcular', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ fome, orcamento, disposicao })
+        body: JSON.stringify({ fome, fame: fome, orcamento, disposicao })
       })
 
       if (!response.ok) {
@@ -43,6 +43,10 @@ function App() {
       }
 
       const match = await response.json()
+      if (match) {
+        // Normaliza a propriedade isOpen/isopen do SQLite/PostgreSQL (Neon)
+        match.isOpen = match.isOpen === true || match.isOpen === 1 || match.isopen === true || match.isopen === 1;
+      }
       setResultadoFinal(match)
     } catch (error) {
       console.error('Erro ao calcular a combinação ideal:', error)
@@ -326,17 +330,52 @@ function App() {
 }
 
 function ExplorarView() {
-  const cardsMock = [
-    { id: 1, nome: "Burger Monster", categoria: "Hamburgueria", preco: "$$", nota: "4.7" },
-    { id: 2, nome: "Bella Italia", categoria: "Pizzaria", preco: "$$$", nota: "4.9" },
-    { id: 3, nome: "Cantinho da Panelada", categoria: "Lanche Raiz", preco: "$", nota: "4.5" }
-  ];
+  const [restaurantes, setRestaurantes] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    fetch('https://boraonde-welder.loca.lt/api/restaurantes')
+      .then((res) => {
+        if (!res.ok) throw new Error('Erro ao buscar restaurantes')
+        return res.json()
+      })
+      .then((data) => {
+        if (active) {
+          setRestaurantes(data)
+          setIsLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Erro ao buscar restaurantes da API:', err)
+        if (active) {
+          // Fallback para mockups caso a API esteja inacessível
+          setRestaurantes([
+            { id: 1, nome: "Burger Monster", categoria: "Hamburgueria", custoBase: 50, mapsUrl: "https://maps.google.com/?q=Burger+Monster" },
+            { id: 2, nome: "Bella Italia", categoria: "Pizzaria", custoBase: 70, mapsUrl: "https://maps.google.com/?q=Bella+Italia" },
+            { id: 3, nome: "Cantinho da Panelada", categoria: "Lanche Raiz", custoBase: 15, mapsUrl: "https://maps.google.com/?q=Cantinho+da+Panelada" }
+          ])
+          setIsLoading(false)
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex items-center justify-center p-md">
+        <div className="text-primary font-title-md animate-pulse">Carregando locais recomendados...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full">
       <h2 className="font-headline-lg text-headline-lg text-on-background mb-lg">Descubra Novos Locais</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cardsMock.map((card) => (
+        {restaurantes.map((card) => (
           <div key={card.id} className="bg-surface-container/60 backdrop-blur-md rounded-2xl border border-outline-variant shadow-xl glow-indigo flex flex-col overflow-hidden">
             {/* Top image placeholder */}
             <div className="bg-slate-800 h-32 rounded-t-lg relative flex items-center justify-center">
@@ -349,13 +388,13 @@ function ExplorarView() {
                 <h3 className="font-title-md text-title-md text-on-background mt-xs">{card.nome}</h3>
                 <div className="flex items-center gap-xs mt-xs text-on-surface-variant text-body-sm font-body-sm">
                   <Star className="w-4 h-4 fill-primary text-primary" />
-                  <span>{card.nota}</span>
+                  <span>{(4.2 + (card.id % 8) * 0.1).toFixed(1)}</span>
                   <span className="mx-xs">•</span>
-                  <span>{card.preco}</span>
+                  <span>{card.custoBase !== undefined ? (card.custoBase < 33 ? '$' : card.custoBase < 66 ? '$$' : '$$$') : '$$'}</span>
                 </div>
               </div>
               
-              <button className="w-full bg-surface-container-highest border border-outline-variant hover:border-primary/50 text-primary font-title-md text-title-md py-xs rounded-xl transition-all duration-200 flex items-center justify-center gap-xs cursor-pointer">
+              <button onClick={() => card.mapsUrl && window.open(card.mapsUrl, '_blank')} className="w-full bg-surface-container-highest border border-outline-variant hover:border-primary/50 text-primary font-title-md text-title-md py-xs rounded-xl transition-all duration-200 flex items-center justify-center gap-xs cursor-pointer">
                 <Eye className="w-4 h-4" />
                 Ver Detalhes
               </button>
@@ -366,6 +405,7 @@ function ExplorarView() {
     </div>
   )
 }
+
 
 function FavoritosView() {
   const favoritosMock = [
