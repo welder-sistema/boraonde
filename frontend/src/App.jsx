@@ -33,7 +33,8 @@ function App() {
       const response = await fetch('https://boraonde-welder.loca.lt/api/calcular', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true'
         },
         body: JSON.stringify({ fome, fame: fome, orcamento, disposicao })
       })
@@ -335,7 +336,11 @@ function ExplorarView() {
 
   useEffect(() => {
     let active = true
-    fetch('https://boraonde-welder.loca.lt/api/restaurantes')
+    fetch('https://boraonde-welder.loca.lt/api/restaurantes', {
+      headers: {
+        'Bypass-Tunnel-Reminder': 'true'
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Erro ao buscar restaurantes')
         return res.json()
