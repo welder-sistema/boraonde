@@ -40,7 +40,7 @@ app.post('/api/calcular', (req, res) => {
     const precoNivel = orcamento < 33 ? 1 : (orcamento < 66 ? 2 : 3);
     const maxDistancia = disposicao < 33 ? 1000 : (disposicao < 66 ? 1800 : 2500);
 
-    const queryText = 'SELECT * FROM restaurantes WHERE isopen = true AND preco_nivel <= $1 AND distancia_metros <= $2';
+    const queryText = 'SELECT * FROM restaurantes WHERE preco_nivel <= $1 AND distancia_metros <= $2';
     const queryParams = [precoNivel, maxDistancia];
 
     db.query(queryText, queryParams, (err, result) => {
