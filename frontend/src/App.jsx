@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Compass, Eye, Heart, Star, Clock, MapPin } from 'lucide-react'
 
-const URL_BASE = 'AQUI_VAI_A_URL_DO_RENDER'
+const URL_BASE = 'https://boraonde.onrender.com'
 
 function App() {
   const [fome, setFome] = useState(50)
@@ -88,25 +88,22 @@ function App() {
           <div className="flex gap-md items-center">
             <button
               onClick={() => setCurrentView('explorar')}
-              className={`font-medium hover:text-primary transition-all duration-200 cursor-pointer bg-transparent border-none pb-1 ${
-                currentView === 'explorar' ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant'
-              }`}
+              className={`font-medium hover:text-primary transition-all duration-200 cursor-pointer bg-transparent border-none pb-1 ${currentView === 'explorar' ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant'
+                }`}
             >
               <span className="font-title-md text-title-md">Explorar</span>
             </button>
             <button
               onClick={() => setCurrentView('favoritos')}
-              className={`font-medium hover:text-primary transition-all duration-200 cursor-pointer bg-transparent border-none pb-1 ${
-                currentView === 'favoritos' ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant'
-              }`}
+              className={`font-medium hover:text-primary transition-all duration-200 cursor-pointer bg-transparent border-none pb-1 ${currentView === 'favoritos' ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant'
+                }`}
             >
               <span className="font-title-md text-title-md">Favoritos</span>
             </button>
             <button
               onClick={() => setCurrentView('historico')}
-              className={`font-medium hover:text-primary transition-all duration-200 cursor-pointer bg-transparent border-none pb-1 ${
-                currentView === 'historico' ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant'
-              }`}
+              className={`font-medium hover:text-primary transition-all duration-200 cursor-pointer bg-transparent border-none pb-1 ${currentView === 'historico' ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant'
+                }`}
             >
               <span className="font-title-md text-title-md">Histórico</span>
             </button>
@@ -316,36 +313,32 @@ function App() {
       <nav className="fixed bottom-0 w-full z-50 lg:hidden rounded-t-xl border-t border-outline-variant/30 shadow-lg shadow-primary/10 bg-surface/80 backdrop-blur-xl flex justify-around items-center h-16 px-4 pb-safe">
         <button
           onClick={() => setCurrentView('home')}
-          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors cursor-pointer bg-transparent border-none ${
-            currentView === 'home' ? 'text-primary' : 'text-on-surface-variant'
-          }`}
+          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors cursor-pointer bg-transparent border-none ${currentView === 'home' ? 'text-primary' : 'text-on-surface-variant'
+            }`}
         >
           <span className="material-symbols-outlined" data-icon="home">home</span>
           <span className="font-label-caps text-label-caps-mobile mt-1">Home</span>
         </button>
         <button
           onClick={() => setCurrentView('explorar')}
-          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors cursor-pointer bg-transparent border-none ${
-            currentView === 'explorar' ? 'text-primary' : 'text-on-surface-variant'
-          }`}
+          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors cursor-pointer bg-transparent border-none ${currentView === 'explorar' ? 'text-primary' : 'text-on-surface-variant'
+            }`}
         >
           <span className="material-symbols-outlined" data-icon="explore">explore</span>
           <span className="font-label-caps text-label-caps-mobile mt-1">Explorar</span>
         </button>
         <button
           onClick={() => setCurrentView('favoritos')}
-          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors cursor-pointer bg-transparent border-none ${
-            currentView === 'favoritos' ? 'text-primary' : 'text-on-surface-variant'
-          }`}
+          className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors cursor-pointer bg-transparent border-none ${currentView === 'favoritos' ? 'text-primary' : 'text-on-surface-variant'
+            }`}
         >
           <span className="material-symbols-outlined" data-icon="favorite">favorite</span>
           <span className="font-label-caps text-label-caps-mobile mt-1">Favoritos</span>
         </button>
         <button
           onClick={() => setCurrentView('historico')}
-          className={`flex flex-col items-center justify-center px-4 py-1 rounded-full active:scale-110 duration-150 transition-all cursor-pointer ${
-            currentView === 'historico' ? 'text-primary bg-primary-container/20 border border-primary/20' : 'text-on-surface-variant bg-surface-container-highest/30 border-none'
-          }`}
+          className={`flex flex-col items-center justify-center px-4 py-1 rounded-full active:scale-110 duration-150 transition-all cursor-pointer ${currentView === 'historico' ? 'text-primary bg-primary-container/20 border border-primary/20' : 'text-on-surface-variant bg-surface-container-highest/30 border-none'
+            }`}
         >
           <span className="material-symbols-outlined" data-icon="history">history</span>
           <span className="font-label-caps text-label-caps-mobile mt-1">Histórico</span>
@@ -408,7 +401,7 @@ function ExplorarView() {
             <div className="bg-slate-800 h-32 rounded-t-lg relative flex items-center justify-center">
               <Compass className="text-on-surface-variant opacity-25 w-12 h-12 animate-pulse" />
             </div>
-            
+
             <div className="p-md flex flex-col flex-grow justify-between gap-md">
               <div>
                 <span className="font-label-caps text-label-caps text-primary uppercase">{card.categoria}</span>
@@ -420,7 +413,7 @@ function ExplorarView() {
                   <span>{card.custoBase !== undefined ? (card.custoBase < 33 ? '$' : card.custoBase < 66 ? '$$' : '$$$') : '$$'}</span>
                 </div>
               </div>
-              
+
               <button onClick={() => card.mapsUrl && window.open(card.mapsUrl, '_blank')} className="w-full bg-surface-container-highest border border-outline-variant hover:border-primary/50 text-primary font-title-md text-title-md py-xs rounded-xl transition-all duration-200 flex items-center justify-center gap-xs cursor-pointer">
                 <Eye className="w-4 h-4" />
                 Ver Detalhes
@@ -456,7 +449,7 @@ function FavoritosView() {
                 ))}
               </div>
             </div>
-            
+
             <button className="h-10 w-10 bg-primary-container/10 border border-primary/20 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-container/20 transition-colors">
               <Heart className="w-5 h-5 fill-primary text-primary" />
             </button>
@@ -482,7 +475,7 @@ function HistoricoView() {
           <div key={item.id} className="relative pl-8">
             {/* Timeline Dot */}
             <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-primary border-4 border-background flex items-center justify-center shadow-lg"></div>
-            
+
             {/* Card wrapper */}
             <div className="bg-surface-container/60 backdrop-blur-md rounded-2xl p-md border border-outline-variant shadow-md flex items-center justify-between gap-md">
               <div className="flex items-start gap-md">
@@ -494,7 +487,7 @@ function HistoricoView() {
                   <h3 className="font-title-md text-title-md text-on-background mt-0.5">{item.local}</h3>
                 </div>
               </div>
-              
+
               <div className="flex flex-col items-end flex-shrink-0">
                 <span className="font-headline-lg text-headline-lg text-primary">{item.match}%</span>
                 <span className="font-label-caps text-label-caps text-on-surface-variant text-[8px] uppercase tracking-widest">Match</span>
