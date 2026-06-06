@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Compass, Eye, Heart, Star, Clock, MapPin } from 'lucide-react'
 
+const URL_BASE = 'AQUI_VAI_A_URL_DO_RENDER'
+
 function App() {
   const [fome, setFome] = useState(50)
   const [orcamento, setOrcamento] = useState(50)
@@ -30,13 +32,12 @@ function App() {
   const handleCalcular = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('https://boraonde-welder.loca.lt/api/calcular', {
+      const response = await fetch(`${URL_BASE}/api/calcular`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Bypass-Tunnel-Reminder': 'true'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ fome, fame: fome, orcamento, disposicao })
+        body: JSON.stringify({ fome, orcamento, disposicao })
       })
 
       if (!response.ok) {
@@ -45,10 +46,25 @@ function App() {
 
       const match = await response.json()
       if (match) {
-        // Normaliza a propriedade isOpen/isopen do SQLite/PostgreSQL (Neon)
-        match.isOpen = match.isOpen === true || match.isOpen === 1 || match.isopen === true || match.isopen === 1;
+        // Normalização robusta para tratar campos nulo/indefinido, minúsculos (PostgreSQL/Neon) ou camelCase (SQLite)
+        const normalized = {
+          id: match.id !== undefined && match.id !== null ? match.id : 0,
+          nome: match.nome || match.Nome || 'Restaurante Sem Nome',
+          categoria: match.categoria || match.Categoria || 'Geral',
+          pesoFome: match.pesoFome !== undefined && match.pesoFome !== null ? Number(match.pesoFome) : (match.pesofome !== undefined && match.pesofome !== null ? Number(match.pesofome) : 50),
+          custoBase: match.custoBase !== undefined && match.custoBase !== null ? Number(match.custoBase) : (match.custobase !== undefined && match.custobase !== null ? Number(match.custobase) : 50),
+          exigenciaDisposicao: match.exigenciaDisposicao !== undefined && match.exigenciaDisposicao !== null ? Number(match.exigenciaDisposicao) : (match.exigenciadisposicao !== undefined && match.exigenciadisposicao !== null ? Number(match.exigenciadisposicao) : 50),
+          isOpen: match.isOpen === true || match.isOpen === 1 || match.isopen === true || match.isopen === 1 || false,
+          mapsUrl: match.mapsUrl || match.mapsurl || match.maps_url || 'https://maps.google.com',
+          matchPercentage: match.matchPercentage !== undefined && match.matchPercentage !== null ? Number(match.matchPercentage) : (match.matchpercentage !== undefined && match.matchpercentage !== null ? Number(match.matchpercentage) : 0),
+          distancia_metros: match.distancia_metros !== undefined && match.distancia_metros !== null ? Number(match.distancia_metros) : (match.distanciametros !== undefined && match.distanciametros !== null ? Number(match.distanciametros) : null),
+          nota_comida: match.nota_comida !== undefined && match.nota_comida !== null ? Number(match.nota_comida) : (match.notacomida !== undefined && match.notacomida !== null ? Number(match.notacomida) : null),
+          nota_ambiente: match.nota_ambiente !== undefined && match.nota_ambiente !== null ? Number(match.nota_ambiente) : (match.notaambiente !== undefined && match.notaambiente !== null ? Number(match.notaambiente) : null)
+        }
+        setResultadoFinal(normalized)
+      } else {
+        setResultadoFinal(null)
       }
-      setResultadoFinal(match)
     } catch (error) {
       console.error('Erro ao calcular a combinação ideal:', error)
     } finally {
@@ -212,7 +228,9 @@ function App() {
                         </span>
                         <span className="text-on-surface-variant mx-1">•</span>
                         <span className="font-body-sm text-body-sm text-on-surface-variant">
-                          {resultadoFinal.exigenciaDisposicao < 33 ? 'Perto de você' : resultadoFinal.exigenciaDisposicao < 66 ? 'Distância Média' : 'Longe / Exige Deslocamento'}
+                          {resultadoFinal.distancia_metros !== null && resultadoFinal.distancia_metros !== undefined
+                            ? `${resultadoFinal.distancia_metros}m de você`
+                            : (resultadoFinal.exigenciaDisposicao < 33 ? 'Perto de você' : resultadoFinal.exigenciaDisposicao < 66 ? 'Distância Média' : 'Longe / Exige Deslocamento')}
                         </span>
                       </div>
                     </div>
@@ -237,12 +255,20 @@ function App() {
                     </div>
                     <div className="bg-surface-container-low p-sm rounded-xl border border-outline-variant/30 flex flex-col items-center justify-center text-center">
                       <span className="material-symbols-outlined text-tertiary mb-1" data-icon="directions_walk">directions_walk</span>
-                      <span className="font-body-sm text-body-sm text-on-surface">{resultadoFinal.exigenciaDisposicao < 33 ? '10 min' : resultadoFinal.exigenciaDisposicao < 66 ? '25 min' : '50 min'}</span>
+                      <span className="font-body-sm text-body-sm text-on-surface">
+                        {resultadoFinal.distancia_metros !== null && resultadoFinal.distancia_metros !== undefined
+                          ? `${Math.round(resultadoFinal.distancia_metros / 80)} min`
+                          : (resultadoFinal.exigenciaDisposicao < 33 ? '10 min' : resultadoFinal.exigenciaDisposicao < 66 ? '25 min' : '50 min')}
+                      </span>
                       <span className="font-label-caps text-label-caps text-on-surface-variant text-[10px]">Tempo</span>
                     </div>
                     <div className="bg-surface-container-low p-sm rounded-xl border border-outline-variant/30 flex flex-col items-center justify-center text-center">
                       <span className="material-symbols-outlined text-tertiary mb-1" data-icon="star">star</span>
-                      <span className="font-body-sm text-body-sm text-on-surface">{(4.2 + (resultadoFinal.id % 8) * 0.1).toFixed(1)}</span>
+                      <span className="font-body-sm text-body-sm text-on-surface">
+                        {resultadoFinal.nota_comida !== null && resultadoFinal.nota_comida !== undefined
+                          ? ((Number(resultadoFinal.nota_comida) + Number(resultadoFinal.nota_ambiente || resultadoFinal.nota_comida)) / 2).toFixed(1)
+                          : (4.2 + (resultadoFinal.id % 8) * 0.1).toFixed(1)}
+                      </span>
                       <span className="font-label-caps text-label-caps text-on-surface-variant text-[10px]">Avaliação</span>
                     </div>
                     <div className="bg-surface-container-low p-sm rounded-xl border border-outline-variant/30 flex flex-col items-center justify-center text-center">
@@ -336,11 +362,7 @@ function ExplorarView() {
 
   useEffect(() => {
     let active = true
-    fetch('https://boraonde-welder.loca.lt/api/restaurantes', {
-      headers: {
-        'Bypass-Tunnel-Reminder': 'true'
-      }
-    })
+    fetch(`${URL_BASE}/api/restaurantes`)
       .then((res) => {
         if (!res.ok) throw new Error('Erro ao buscar restaurantes')
         return res.json()

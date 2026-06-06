@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-// Importa a conexão do banco de dados para garantir que ele seja inicializado/semeado no boot
 const db = require('./database');
 const { calcularMelhorMatch } = require('./fuzzyEngine');
 
@@ -16,6 +15,17 @@ app.get('/api/status', (req, res) => {
   res.json({ status: "BoraOnde API rodando perfeitamente" });
 });
 
+// Rota de Listagem de Restaurantes
+app.get('/api/restaurantes', (req, res) => {
+  db.query('SELECT * FROM restaurantes', (err, result) => {
+    if (err) {
+      console.error('Erro ao consultar banco de dados:', err.message);
+      return res.status(500).json({ error: "Erro interno ao consultar banco de dados." });
+    }
+    res.json(result.rows);
+  });
+});
+
 // Rota de Cálculo do Melhor Match
 app.post('/api/calcular', (req, res) => {
   try {
@@ -26,11 +36,13 @@ app.post('/api/calcular', (req, res) => {
       return res.status(400).json({ error: "Parâmetros fome, orcamento e disposicao são obrigatórios." });
     }
 
-    db.all('SELECT * FROM restaurantes', [], (err, rows) => {
+    db.query('SELECT * FROM restaurantes', (err, result) => {
       if (err) {
         console.error('Erro ao consultar banco de dados:', err.message);
         return res.status(500).json({ error: "Erro interno ao consultar banco de dados." });
       }
+
+      const rows = result.rows;
 
       const estadoUsuario = {
         fome: Number(fome),
@@ -40,10 +52,10 @@ app.post('/api/calcular', (req, res) => {
 
       const resultado = calcularMelhorMatch(estadoUsuario, rows);
       
-      // Converte isOpen de 1/0 para boolean para compatibilidade com o React frontend
+      // Converte isOpen/isopen para boolean para compatibilidade com o React frontend
       const resultadoFormatado = resultado ? {
         ...resultado,
-        isOpen: resultado.isOpen === 1 || resultado.isOpen === true
+        isOpen: resultado.isOpen === 1 || resultado.isOpen === true || resultado.isopen === 1 || resultado.isopen === true
       } : null;
 
       res.json(resultadoFormatado);
