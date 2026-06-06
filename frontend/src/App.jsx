@@ -10,6 +10,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [resultadoFinal, setResultadoFinal] = useState(null)
   const [currentView, setCurrentView] = useState('home')
+  const [hasCalculated, setHasCalculated] = useState(false)
 
   const getFomeLabel = (val) => {
     if (val < 33) return "Pouca"
@@ -65,8 +66,11 @@ function App() {
       } else {
         setResultadoFinal(null)
       }
+      setHasCalculated(true)
     } catch (error) {
       console.error('Erro ao calcular a combinação ideal:', error)
+      setResultadoFinal(null)
+      setHasCalculated(true)
     } finally {
       setIsLoading(false)
     }
@@ -284,6 +288,13 @@ function App() {
                       Compartilhar Resultado
                     </button>
                   </div>
+                </div>
+              ) : hasCalculated ? (
+                <div className="mt-md bg-surface-container-low border border-outline-variant/30 border-dashed rounded-2xl p-lg flex flex-col items-center justify-center text-center opacity-80 w-full min-h-[300px]">
+                  <div className="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-sm">
+                    <span className="material-symbols-outlined text-error text-3xl" data-icon="search_off">search_off</span>
+                  </div>
+                  <p className="font-body-md text-body-md text-on-surface-variant max-w-[384px]">Nenhum rolê encontrado para essa combinação. Que tal ajustar os filtros?</p>
                 </div>
               ) : (
                 <div className="mt-md bg-surface-container-low border border-outline-variant/30 border-dashed rounded-2xl p-lg flex flex-col items-center justify-center text-center opacity-60 w-full">
